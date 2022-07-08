@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.489
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebRestAs400", "WebRestAs400\WebRestAs400.csproj", "{175D2CDE-5B79-4527-9475-D933C4664173}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsOrm3", "AsOrm3\AsOrm3.csproj", "{1AEF1FEA-8646-4EF8-A3BB-C9D67C721C60}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{175D2CDE-5B79-4527-9475-D933C4664173}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{175D2CDE-5B79-4527-9475-D933C4664173}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{175D2CDE-5B79-4527-9475-D933C4664173}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{175D2CDE-5B79-4527-9475-D933C4664173}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AEF1FEA-8646-4EF8-A3BB-C9D67C721C60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AEF1FEA-8646-4EF8-A3BB-C9D67C721C60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AEF1FEA-8646-4EF8-A3BB-C9D67C721C60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AEF1FEA-8646-4EF8-A3BB-C9D67C721C60}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {98AB2B0B-41D4-4691-B6DE-E357741370DF}
+	EndGlobalSection
+EndGlobal

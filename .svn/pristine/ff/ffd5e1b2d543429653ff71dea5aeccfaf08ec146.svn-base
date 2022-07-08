@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<packages>
+  <package id="IBM.Data.DB2.iSeries" version="7.1.0" targetFramework="net462" />
+  <package id="NLog" version="4.7.10" targetFramework="net451" />
+  <package id="System.ComponentModel.Annotations" version="4.5.0" targetFramework="net462" />
+</packages>
