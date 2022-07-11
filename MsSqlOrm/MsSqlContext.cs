@@ -12,6 +12,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MsSqlOrm
 {
+    /// <summary>
+    /// I valori null non vengono considerati in Insert e Update (quindi nel modello
+    /// usare, ad esempio, DateTime? e non DateTime)
+    /// </summary>
     public abstract partial class MsSqlContext
     {
         public string ConnectionString { get; set; }
@@ -70,28 +74,31 @@ namespace MsSqlOrm
             }
         }
 
-        private int ExecuteNonQueries<T>(List<DapperObj> dapperObjs)
+        public int ExecuteNonQueries(List<DapperObj> dapperObjs)
         {
             int index = 0;
             using (IDbConnection db = new SqlConnection(ConnectionString))
-            using (var transaction = db.BeginTransaction())
             {
-                try
+                db.Open();
+                using (var transaction = db.BeginTransaction())
                 {
-                    foreach (var dapperObj in dapperObjs)
+                    try
                     {
-                        if (Logger != null) Logger.Trace(dapperObj.Statement);
-                        db.Execute(dapperObj.Statement, dapperObj.Obj, transaction);
-                        index++;
+                        foreach (var dapperObj in dapperObjs)
+                        {
+                            if (Logger != null) Logger.Trace(dapperObj.Statement);
+                            db.Execute(dapperObj.Statement, dapperObj.Obj, transaction);
+                            index++;
+                        }
+                        transaction.Commit();
+                        return index;
                     }
-                    transaction.Commit();
-                    return index;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    if (Logger != null) Logger.Error(ex, "Errore nell'esecuzione della transazione");
-                    return -1;
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        if (Logger != null) Logger.Error(ex, "Errore nell'esecuzione della transazione");
+                        return -1;
+                    }
                 }
             }
         }
@@ -103,16 +110,16 @@ namespace MsSqlOrm
             return ret;
         }
 
-        public int Update<T>(T obj, string[] keys, string[] fildsToUpdate)
+        public int Update<T>(T obj, string[] fildsToUpdate)
         {
             var statement = UpdateStatement<T>(obj, fildsToUpdate);
             var ret = ExecuteNonQuery<T>(statement, obj);
             return ret;
         }
 
-        public int Delete<T>(T obj, string[] keys)
+        public int Delete<T>(T obj)
         {
-            var statement = DeleteStatement<T>(obj, tableName, keys);
+            var statement = DeleteStatement<T>(obj);
             var ret = ExecuteNonQuery<T>(statement, obj);
             return ret;
         }
@@ -127,8 +134,16 @@ namespace MsSqlOrm
                 var parameters = new List<string>();
                 foreach (PropertyInfo pi in typeof(T).GetProperties())
                 {
-                    fields.Add(pi.Name.ToString());
-                    parameters.Add($"@{pi.Name.ToString()}");
+                    var attributeVirtual = Attribute.GetCustomAttribute(obj.GetType().GetProperty(pi.Name), typeof(Virtual)) as Virtual;
+                    if (attributeVirtual == null && pi.Name!="ID" && pi.Name!="Id")
+                    {
+                        var keyValue = obj.GetType().GetProperty(pi.Name.ToString()).GetValue(obj, null);
+                        if (keyValue != null)
+                        {
+                            fields.Add(pi.Name.ToString());
+                            parameters.Add($"@{pi.Name.ToString()}");
+                        }
+                    }
                 }
                 stringBuilder.Append($"INSERT INTO  {tableName} (");
                 string fieldsString = string.Join(",", fields);
@@ -167,13 +182,21 @@ namespace MsSqlOrm
 
                 foreach (PropertyInfo pi in typeof(T).GetProperties())
                 {
-                    if (fildsToUpdate == null || fildsToUpdate.Length == 0 || fildsToUpdate.Contains(pi.Name.ToString()))
+                    var attributeVirtual = Attribute.GetCustomAttribute(obj.GetType().GetProperty(pi.Name), typeof(Virtual)) as Virtual;
+                    if (attributeVirtual == null && pi.Name != "ID" && pi.Name != "Id")
                     {
-                        var field = pi.Name.ToString();
-                        var parameter = $"@{pi.Name.ToString()}";
-                        if (index > 1) stringBuilder.Append(", ");
-                        stringBuilder.Append($"{field} = {parameter}");
-                        index++;
+                        if (fildsToUpdate == null || fildsToUpdate.Length == 0 || fildsToUpdate.Contains(pi.Name.ToString()))
+                        {
+                            var keyValue = obj.GetType().GetProperty(pi.Name.ToString()).GetValue(obj, null);
+                            if (keyValue != null)
+                            {
+                                if (index > 0) stringBuilder.Append(", ");
+                                var field = pi.Name.ToString();
+                                var parameter = $"@{pi.Name.ToString()}";
+                                stringBuilder.Append($"{field} = {parameter}");
+                                index++;
+                            }
+                        }
                     }
                     var attributeKey = Attribute.GetCustomAttribute(pi, typeof(KeyAttribute)) as KeyAttribute;
                     if (attributeKey != null)
@@ -188,9 +211,9 @@ namespace MsSqlOrm
                     stringBuilder.Append(" WHERE ");
                     foreach (var key in keys)
                     {
-                        if (index > 1) stringBuilder.Append(", ");
-                        var keyValue = obj.GetType().GetProperty(key).GetValue(obj, null);
-                        stringBuilder.Append($"{key} = @{keyValue}");
+                        if (index > 1) stringBuilder.Append(" AND ");
+                        //var keyValue = obj.GetType().GetProperty(key).GetValue(obj, null);
+                        stringBuilder.Append($"{key} = @{key}");
                         index++;
                     }
                 }
@@ -232,9 +255,9 @@ namespace MsSqlOrm
                     stringBuilder.Append(" WHERE ");
                     foreach (var key in keys)
                     {
-                        if (index > 1) stringBuilder.Append(", ");
-                        var keyValue = obj.GetType().GetProperty(key).GetValue(obj, null);
-                        stringBuilder.Append($"{key} = @{keyValue}");
+                        if (index > 0) stringBuilder.Append(" AND ");
+                        //var keyValue = obj.GetType().GetProperty(key).GetValue(obj, null);
+                        stringBuilder.Append($"{key} = @{key}");
                         index++;
                     }
                 }

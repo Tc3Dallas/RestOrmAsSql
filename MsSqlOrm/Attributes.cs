@@ -25,4 +25,15 @@ namespace MsSqlOrm
             name = null;
         }
     }
+
+    /// <summary>
+    /// Attributo per le properties di un modello per specificare che non sono campi reali del DB ma entità collegate
+    /// </summary>
+    [System.AttributeUsage(System.AttributeTargets.Property)]
+    public class Virtual : System.Attribute
+    {
+        public Virtual()
+        {
+        }
+    }
 }

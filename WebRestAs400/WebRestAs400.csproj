@@ -183,11 +183,14 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="As400Extension.cs" />
+    <Compile Include="Controllers\SqlSampleController.cs" />
     <Compile Include="Controllers\LuaMpRigaListinoController.cs" />
     <Compile Include="Controllers\LuaMpTestataListinoController.cs" />
     <Compile Include="Controllers\WebAccessoriUserController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\DestinazioniController.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="SqlContext.cs" />
     <Compile Include="Models\LuaMpIncemento.cs" />
     <Compile Include="Models\LuaMpRigheListino.cs" />
     <Compile Include="Models\WebAccessoriDestinazioni.cs" />
@@ -293,6 +296,10 @@
     <ProjectReference Include="..\AsOrm3\AsOrm3.csproj">
       <Project>{1aef1fea-8646-4ef8-a3bb-c9d67c721c60}</Project>
       <Name>AsOrm3</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MsSqlOrm\MsSqlOrm.csproj">
+      <Project>{D976498C-6CD3-4D5C-B7B9-A3E8EF3BAEDB}</Project>
+      <Name>MsSqlOrm</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
